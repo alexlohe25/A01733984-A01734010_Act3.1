@@ -26,10 +26,25 @@ void agregaNodo (Node* &raiz, int valor){
             agregaNodo(raiz -> der, valor);
     }
 }
+int whatLevelAmI(Node* raiz, int valor, int nivel){
+    if (raiz != NULL){
+        if (valor == raiz -> info)
+            return nivel;
+        if (valor < raiz -> info)
+            return whatLevelAmI(raiz -> izq, valor, nivel + 1);
+        if (valor > raiz -> info)
+            return whatLevelAmI(raiz -> der, valor, nivel + 1);
+    }
+    return -1;
+}
 int main(){
     Node* raiz = NULL;
     agregaNodo(raiz, 5);
     agregaNodo(raiz, 6);
     agregaNodo(raiz, 3);
+    cout << whatLevelAmI(raiz, 5, 0) << endl;
+    cout << whatLevelAmI(raiz, 6, 0) << endl;
+    cout << whatLevelAmI(raiz, 3, 0) << endl;
+    cout << whatLevelAmI(raiz, 4, 0) << endl;
     return 0;
 }
