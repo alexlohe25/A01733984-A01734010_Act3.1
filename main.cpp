@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 using namespace std;
 struct Node{
     int info;
@@ -25,6 +26,31 @@ void postOrden(Node *r){
         postOrden(r -> der);
         cout << r-> info << " ";
     }
+}
+void levelByLevel(Node* r){
+    queue <Node*> niveles;
+    if (r != NULL){
+        niveles.push(r);
+        while (!niveles.empty()){
+            Node * temp = niveles.front();
+            niveles.pop();
+            cout << temp -> info << " ";
+            if (temp -> izq != NULL)
+            niveles.push(temp -> izq);
+            if (temp -> der != NULL)
+            niveles.push(temp->der);
+        }
+    }
+}
+int height(Node* r){
+    if (r == NULL)
+        return 0;
+    int ladoIzq = height(r -> izq);
+    int ladoDer = height(r -> der);
+    if (ladoIzq > ladoDer)
+        return ladoIzq + 1;
+    else
+        return ladoDer + 1;
 }
 Node* generarNodo(int valor){
   Node* tmp = new Node;
@@ -59,6 +85,10 @@ void traversal(Node* raiz, int opcion){
             postOrden(raiz);
             cout << endl;
         break;
+        case 4:
+            levelByLevel(raiz);
+            cout << endl;
+        break;
     }
 }
 int whatLevelAmI(Node* raiz, int valor, int nivel){
@@ -84,6 +114,8 @@ int main(){
     traversal(raiz, 1);
     traversal(raiz, 2);
     traversal(raiz, 3);
+    traversal(raiz, 4);
+    cout << height(raiz) << endl;
     cout << whatLevelAmI(raiz, 30, 0) << endl;
     cout << whatLevelAmI(raiz, 28, 0) << endl;
     cout << whatLevelAmI(raiz, 11, 0) << endl;
