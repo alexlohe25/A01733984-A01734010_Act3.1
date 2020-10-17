@@ -38,7 +38,7 @@ Node* generarNodo(int valor, Node* padre){
   return tmp;
 }
 
-void agregaNodo (Node* &raiz, int valor, Node* padre){
+void agregaNodo(Node* &raiz, int valor, Node* padre){
     if (raiz == NULL){
         Node* nodo = generarNodo(valor, padre);
         raiz = nodo;
@@ -51,55 +51,60 @@ void agregaNodo (Node* &raiz, int valor, Node* padre){
     }
 }
 
-void deleteMemoria(Node* raiz){
-  raiz -> izq = NULL;
-  raiz -> der = NULL;
-  delete raiz;
+void deleteMemoria(Node* node){
+  node -> izq = NULL;
+  node -> der = NULL;
+  delete node;
 }
 
-Node* siguiente(Node* raiz){
+Node* cambio(Node* raiz){
   if(raiz == NULL){
     return NULL;
   }
-  else if(raiz -> izq){
-    return siguiente(raiz -> izq);
+  if(raiz -> izq){
+    return cambio(raiz -> izq);
   }
   else{
     return raiz;
   }
 }
 
-void reemplazar(Node* raiz, Node* nuevaR){
+void reemplaza(Node* raiz, Node* nuevaR){
   if(raiz -> padre){
     if(raiz -> info == raiz -> padre -> izq -> info){
       raiz -> padre -> izq = nuevaR;
     }
-    else if(raiz -> info == raiz -> padre -> der -> info){
+    if(raiz -> info == raiz -> padre -> der -> info){
       raiz -> padre -> der = nuevaR;
     }
   }
-  else if(nuevaR){
+  if(nuevaR){
     nuevaR -> padre = raiz -> padre;
   }
 }
 
-void eliminaNodo(Node* raiz){
-  if(raiz -> izq){
-    reemplazar(raiz, raiz -> izq);
-    deleteMemoria(raiz);
-  }
-  else if(raiz -> der){
-    reemplazar(raiz, raiz -> der);
-    deleteMemoria(raiz);
-  }
-  else if(raiz -> der && raiz -> izq){
-    Node* tmp = siguiente(raiz -> der);
-    raiz -> info = tmp -> info;
+void eliminaNodo(Node* eRaiz){
+  if(eRaiz -> izq && eRaiz -> der){
+    Node* tmp = cambio(eRaiz -> der);
+    eRaiz -> info = tmp -> info;
     eliminaNodo(tmp);
   }
-  else{
-    reemplazar(raiz, NULL);
-    deleteMemoria(raiz);
+  else if(eRaiz -> izq){
+    reemplaza(eRaiz, eRaiz -> izq);
+    deleteMemoria(eRaiz);
+  }
+  else if(eRaiz -> der){
+    reemplaza(eRaiz, eRaiz -> der);
+    deleteMemoria(eRaiz);
+  }
+  else if(eRaiz -> izq == NULL && eRaiz -> der == NULL){
+    if(eRaiz -> padre -> izq == eRaiz){
+      eRaiz -> padre -> izq = NULL;
+    }
+    else{
+      eRaiz -> padre -> der = NULL;
+    }
+    deleteMemoria(eRaiz);
   }
 }
 
@@ -107,11 +112,11 @@ void elimina(Node* raiz, int valor){
     if(raiz == NULL){
       return;
     }
-    else if(valor > raiz -> info){
-      elimina(raiz -> der, valor);
-    }
     else if(valor < raiz -> info){
       elimina(raiz -> izq, valor);
+    }
+    else if(valor > raiz -> info){
+      elimina(raiz -> der, valor);
     }
     else{
       eliminaNodo(raiz);
@@ -157,11 +162,8 @@ int main(){
     traversal(raiz, 1);
     traversal(raiz, 2);
     traversal(raiz, 3);
-    cout << whatLevelAmI(raiz, 30, 0) << endl;
-    cout << whatLevelAmI(raiz, 28, 0) << endl;
-    cout << whatLevelAmI(raiz, 11, 0) << endl;
-    cout << whatLevelAmI(raiz, 5, 0) << endl;
-    elimina(raiz, 10);
+    cout<<"Pruebas"<<endl;
+    elimina(raiz, 11);
     traversal(raiz, 1);
     traversal(raiz, 2);
     traversal(raiz, 3);
