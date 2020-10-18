@@ -5,8 +5,8 @@ struct Node{
     int info;
     struct Node* izq;
     struct Node* der;
-    struct Node* padre;
 };
+
 void preOrden(Node* r){
     if (r != NULL){
         cout << r -> info << " ";
@@ -14,6 +14,7 @@ void preOrden(Node* r){
         preOrden(r -> der);
     }
 }
+
 void inOrden(Node* r){
     if (r != NULL){
         inOrden(r -> izq);
@@ -21,6 +22,7 @@ void inOrden(Node* r){
         inOrden(r -> der);
     }
 }
+
 void postOrden(Node *r){
     if (r != NULL){
         postOrden(r -> izq);
@@ -28,6 +30,7 @@ void postOrden(Node *r){
         cout << r-> info << " ";
     }
 }
+
 void levelByLevel(Node* r){
     queue <Node*> niveles;
     if (r != NULL){
@@ -43,6 +46,7 @@ void levelByLevel(Node* r){
         }
     }
 }
+
 int height(Node* r){
     if (r == NULL)
         return 0;
@@ -53,6 +57,7 @@ int height(Node* r){
     else
         return ladoDer + 1;
 }
+
 void ancestors(Node* raiz, Node* nodo, int valor){
     if (nodo != NULL){
         if (nodo -> info == valor){
@@ -73,34 +78,27 @@ void ancestors(Node* raiz, Node* nodo, int valor){
             ancestors(raiz, nodo -> der, valor);  
     }
 }
-Node* generarNodo(int valor, Node* padre){
+
+Node* generarNodo(int valor){
   Node* tmp = new Node;
   tmp -> info = valor;
   tmp -> der = NULL;
   tmp -> izq = NULL;
-  tmp -> padre = padre;
   return tmp;
 }
 
-void agregaNodo (Node* &raiz, int valor, Node* padre){
+void agregaNodo (Node* &raiz, int valor){
     if (raiz == NULL){
-        Node* nodo = generarNodo(valor, padre);
+        Node* nodo = generarNodo(valor);
         raiz = nodo;
     }
     else{
         if(valor < raiz -> info)
-            agregaNodo(raiz -> izq, valor, raiz);
+            agregaNodo(raiz -> izq, valor);
         if(valor > raiz -> info)
-            agregaNodo(raiz -> der, valor, raiz);
+            agregaNodo(raiz -> der, valor);
     }
 }
-
-void deleteMemoria(Node* node){
-  node -> izq = NULL;
-  node -> der = NULL;
-  delete node;
-}
-
 Node* cambio(Node* raiz){
   if(raiz == NULL){
     return NULL;
@@ -113,57 +111,29 @@ Node* cambio(Node* raiz){
   }
 }
 
-void reemplaza(Node* raiz, Node* nuevaR){
-  if(raiz -> padre){
-    if(raiz -> info == raiz -> padre -> izq -> info){
-      raiz -> padre -> izq = nuevaR;
-    }
-    else if(raiz -> info == raiz -> padre -> der -> info){
-      raiz -> padre -> der = nuevaR;
-    }
-  }
-  if(nuevaR){
-    nuevaR -> padre = raiz -> padre;
-  }
-}
-
-void eliminaNodo(Node* eRaiz){
-  if(eRaiz -> izq && eRaiz -> der){
-    Node* tmp = cambio(eRaiz -> der);
-    eRaiz -> info = tmp -> info;
-    eliminaNodo(tmp);
-  }
-  else if(eRaiz -> izq){
-    reemplaza(eRaiz, eRaiz -> izq);
-    deleteMemoria(eRaiz);
-  }
-  else if(eRaiz -> der){
-    Node * tempDer = eRaiz -> der;
-    reemplaza(eRaiz, tempDer);
-    deleteMemoria(eRaiz);
-  }
-  else if(eRaiz -> izq == NULL && eRaiz -> der == NULL){
-    if(eRaiz -> padre -> izq == eRaiz){
-        eRaiz -> padre -> izq = NULL;
-    }
-    else if(eRaiz -> padre -> der == eRaiz){
-        eRaiz -> padre -> der = NULL;
-    }
-    deleteMemoria(eRaiz);
-  }
-}
-
-void elimina(Node* raiz, int valor){
-    if(raiz != NULL){
-        if(valor < raiz -> info){
-            elimina(raiz -> izq, valor);
+Node* elimina(Node* r, int valor){
+    if (r == NULL)
+        return r;
+    if (valor < r -> info)
+        r -> izq = elimina(r -> izq, valor);
+    else if (valor > r -> info)
+        r -> der = elimina(r->der, valor);
+    else{
+        if (r -> izq == NULL){
+            Node* temp = r -> der;
+            delete r;
+            return temp;
         }
-        else if(valor > raiz -> info){
-            elimina(raiz -> der, valor);
+        else if (r -> der == NULL){
+            Node * temp = r -> izq;
+            delete r;
+            return temp;
         }
-        else if (valor == raiz -> info)
-            eliminaNodo(raiz);
+        Node* temp2Hijos = cambio(r -> der);
+        r -> info = temp2Hijos -> info;
+        r -> der = elimina(r -> der, temp2Hijos -> info);
     }
+    return r;
 }
 void traversal(Node* raiz, int opcion){
     switch (opcion){
@@ -211,7 +181,7 @@ int main(){
     for (int i = 0; i < n; i++){
         int valorAdd;
         cin >> valorAdd;
-        agregaNodo(raiz, valorAdd, NULL);
+        agregaNodo(raiz, valorAdd);
     }
     cin >> m;
     for (int i = 0; i < m; i++){
