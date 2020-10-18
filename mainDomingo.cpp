@@ -1,12 +1,23 @@
+/*
+    TC1031.500 Actividad 3.1 Operaciones avanzadas en un BST 
+    Código elaborado por: 
+    Alejandro López Hernández A01733984
+    Juan Pablo Armendáriz Salas A01734010
+    Fecha: 18/Oct/2020
+    Programa dedicado al uso de operaciones en un Arbol Binario de Busqueda (BST), incluyendo inserciones y eliminaciones de nodos
+    Impresión del arbol en PreOrden , InOrden, PsotOrden y por niveles; así como la altura del árbol, obtener los ancestros de un nodo
+    y el nivel en que se encuentra el nodo en el arbol
+*/
 #include <iostream>
 #include <queue>
 using namespace std;
+//estructura del nodo
 struct Node{
     int info;
     struct Node* izq;
     struct Node* der;
 };
-
+// impresiones recursivas del arbol, todos se ejecutan en un orden O(n), puesto que se ejecuta n veces según los nodos del arbol
 void preOrden(Node* r){
     if (r != NULL){
         cout << r -> info << " ";
@@ -14,7 +25,6 @@ void preOrden(Node* r){
         preOrden(r -> der);
     }
 }
-
 void inOrden(Node* r){
     if (r != NULL){
         inOrden(r -> izq);
@@ -30,7 +40,8 @@ void postOrden(Node *r){
         cout << r-> info << " ";
     }
 }
-
+//levelByLevel, que hace uso de una pila para guardar los nodos de tal manera que se impriman los nodos según en el nivel del árbol 
+//en el que se encuentran,  es de Orden O(n) puesto que se ejecuta n veces según la cantidad de nodos
 void levelByLevel(Node* r){
     queue <Node*> niveles;
     if (r != NULL){
@@ -46,7 +57,7 @@ void levelByLevel(Node* r){
         }
     }
 }
-
+//height, determina la altura del BST comparando la altura de ambos lados y tomando la que sea mayor, es de orden O(n log n) 
 int height(Node* r){
     if (r == NULL)
         return 0;
@@ -57,28 +68,26 @@ int height(Node* r){
     else
         return ladoDer + 1;
 }
-
-void ancestors(Node* raiz, Node* nodo, int valor){
+//funcion ancestors, que imprime una lista de los ancestros de determinado nodo, es de orden O(n)
+void ancestors(Node* nodo, int valor, queue <int> & ancestros){
     if (nodo != NULL){
-        if (nodo -> info == valor){
-            int flag = 0;
-            while (raiz -> info != valor){
-                flag = 1;
-                cout << raiz -> info << " ";
-                if (valor < raiz -> info)
-                    raiz = raiz -> izq;
-                if (valor > raiz -> info)
-                    raiz = raiz -> der;
+        if (valor == nodo -> info){
+            while (!ancestros.empty()){
+                cout << ancestros.front() << " ";
+                ancestros.pop();
             }
-            if(flag != 0)cout << endl;
+            cout << endl;
         }
-        if (valor < nodo -> info)
-            ancestors(raiz, nodo -> izq, valor);
-        if (valor > nodo -> info)
-            ancestors(raiz, nodo -> der, valor);  
+        else{
+            ancestros.push(nodo-> info);
+            if (valor < nodo -> info)
+                ancestors(nodo -> izq, valor, ancestros);
+            if (valor > nodo -> info)
+                ancestors(nodo -> der, valor, ancestros);            
+        }
     }
 }
-
+//generaNodo, que guarda dinamicamente un nuevo ndo, orden O(1)
 Node* generarNodo(int valor){
   Node* tmp = new Node;
   tmp -> info = valor;
@@ -86,7 +95,7 @@ Node* generarNodo(int valor){
   tmp -> izq = NULL;
   return tmp;
 }
-
+//agregaNodo, agregar un nuevo nodo al BST según su valor. Orden(log n)
 void agregaNodo (Node* &raiz, int valor){
     if (raiz == NULL){
         Node* nodo = generarNodo(valor);
@@ -99,6 +108,7 @@ void agregaNodo (Node* &raiz, int valor){
             agregaNodo(raiz -> der, valor);
     }
 }
+//cambio, obtiene el valor más pequeño de la derecha de un nodo. O(n)
 Node* cambio(Node* raiz){
   if(raiz == NULL){
     return NULL;
@@ -110,7 +120,7 @@ Node* cambio(Node* raiz){
     return raiz;
   }
 }
-
+//elimina, elimina un nodo con determindao valor. O (log n)
 Node* elimina(Node* r, int valor){
     if (r == NULL){
         return r;
@@ -140,6 +150,7 @@ Node* elimina(Node* r, int valor){
     }
     return r;
 }
+//funcion traversal, imprime el arbol en un orden determinado por una opcion. O(1)
 void traversal(Node* raiz, int opcion){
     switch (opcion){
         case 1:
@@ -168,6 +179,7 @@ void traversal(Node* raiz, int opcion){
         break;
     }
 }
+//whatLevelAmI, obtiene el nivel del BST en el que está un determinado nodo, si no lo encuentra retorna -1. O(log n)
 int whatLevelAmI(Node* raiz, int valor, int nivel){
     if (raiz != NULL){
         if (valor == raiz -> info)
@@ -179,6 +191,7 @@ int whatLevelAmI(Node* raiz, int valor, int nivel){
     }
     return -1;
 }
+//main, ejecuta todo
 int main(){
     Node* raiz = NULL;
     int n, m , q, r;
@@ -200,9 +213,10 @@ int main(){
     cout << height(raiz) << endl;
     cin >> q;
     for (int i = 0; i < q; i++){
+        queue <int> ancestros;
         int valorAncestro;
         cin >> valorAncestro;
-        ancestors(raiz, raiz, valorAncestro);
+        ancestors(raiz, valorAncestro, ancestros);
     }
     cin >> r;
     for (int i = 0; i < r; i++){
