@@ -112,12 +112,17 @@ Node* cambio(Node* raiz){
 }
 
 Node* elimina(Node* r, int valor){
-    if (r == NULL)
+    if (r == NULL){
         return r;
-    if (valor < r -> info)
+    }
+    if (valor < r -> info){
         r -> izq = elimina(r -> izq, valor);
-    else if (valor > r -> info)
+        return r;
+    }
+    else if (valor > r -> info){
         r -> der = elimina(r->der, valor);
+        return r;
+    }
     else{
         if (r -> izq == NULL){
             Node* temp = r -> der;
@@ -187,7 +192,8 @@ int main(){
     for (int i = 0; i < m; i++){
         int valorDelete;
         cin >> valorDelete;
-        elimina(raiz, valorDelete);
+        if (raiz != NULL)
+            raiz = elimina(raiz, valorDelete);
     }
     for (int i = 1; i <= 4; i++)
         traversal(raiz,i);
